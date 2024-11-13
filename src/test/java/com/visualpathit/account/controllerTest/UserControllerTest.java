@@ -15,95 +15,65 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.visualpathit.account.controller.UserController;
-import com.visualpathit.account.model.User;
 import com.visualpathit.account.service.UserService;
 import com.visualpathit.account.setup.StandaloneMvcTestViewResolver;
 
-
 public class UserControllerTest {
-	
-	@Mock
-	private UserService controllerSer;
-	@InjectMocks
-	private UserController controller;
-	private MockMvc mockMvc;
-	
-	@Before
-	public void setup(){
-		MockitoAnnotations.initMocks(this);
-		
-		/*InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("/WEB-INF/views/");
-        viewResolver.setSuffix(".jsp");
-		*/
-		mockMvc = MockMvcBuilders.standaloneSetup(controller)
-				  .setViewResolvers(new StandaloneMvcTestViewResolver()).build();
-	}
-	
-	@Test
-	public void registrationTestforHappyFlow() throws Exception{
-		User user = new User();
-		mockMvc.perform(get("/registration"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("registration"))
-        .andExpect(forwardedUrl("registration"));
-		
-	}
-	@Test
-	public void registrationTestforNullValueHappyFlow() throws Exception{
-		mockMvc.perform(get("/registration"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("registration"))
-        .andExpect(forwardedUrl("registration"));
-		
-	}
-	/*@Test
-	public void registrationTestforPostValueHappyFlow() throws Exception{
-		String description =new String("Error String");
-		UserValidator userValidator;
-		BindingResult bindingResult;
-		when(userValidator.validate(new User(),bindingResult))
-		.thenThrow(bindingResult.hasErrors());
-		mockMvc.perform(post("/registration").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("userForm","userForm"))
-		
-        .andExpect(status().isOk());
-        //.andExpect(view().name("redirect:/welcome"))
-        //.andExpect(forwardedUrl("redirect:/welcome"));
-		
-	}*/
-	@Test
-	public void loginTestHappyFlow() throws Exception{
-		String error = "Your username and password is invalid";
-		mockMvc.perform(get("/login").param(error, error))
-        .andExpect(status().isOk())
-        .andExpect(view().name("login"))
-        .andExpect(forwardedUrl("login"));
-		
-	}
-	@Test
-	public void welcomeTestHappyFlow() throws Exception{
-		mockMvc.perform(get("/welcome"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("welcome"))
-        .andExpect(forwardedUrl("welcome"));
-		
-	}
-	@Test
-	public void welcomeAfterDirectLoginTestHappyFlow() throws Exception{
-		mockMvc.perform(get("/"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("welcome"))
-        .andExpect(forwardedUrl("welcome"));
-		
-	}
-	@Test
-	public void indexTestHappyFlow() throws Exception{
-		mockMvc.perform(get("/index"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("index_home"))
-        .andExpect(forwardedUrl("index_home"));
-		
-	}
-
+    
+    @Mock
+    private UserService userService;
+    
+    @InjectMocks
+    private UserController userController;
+    
+    private MockMvc mockMvc;
+    
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(userController)
+                .setViewResolvers(new StandaloneMvcTestViewResolver())
+                .build();
+    }
+    
+    @Test
+    public void shouldDisplayRegistrationPage() throws Exception {
+        mockMvc.perform(get("/registration"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("registration"))
+                .andExpect(forwardedUrl("registration"));
+    }
+    
+    @Test
+    public void shouldDisplayLoginPageWithErrorMessage() throws Exception {
+        String errorMessage = "Your username and password is invalid";
+        mockMvc.perform(get("/login").param("error", errorMessage))
+                .andExpect(status().isOk())
+                .andExpect(view().name("login"))
+                .andExpect(forwardedUrl("login"));
+    }
+    
+    @Test
+    public void shouldDisplayWelcomePage() throws Exception {
+        mockMvc.perform(get("/welcome"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("welcome"))
+                .andExpect(forwardedUrl("welcome"));
+    }
+    
+    @Test
+    public void shouldRedirectToWelcomePageOnRootRequest() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("welcome"))
+                .andExpect(forwardedUrl("welcome"));
+    }
+    
+    @Test
+    public void shouldDisplayHomePage() throws Exception {
+        mockMvc.perform(get("/index"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index_home"))
+                .andExpect(forwardedUrl("index_home"));
+    }
 }
